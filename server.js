@@ -19,12 +19,11 @@ app.get('/', (req, res) => {
 })
 
 // Routes
-app.use('/students', require('./routes/student.route'));
+app.use('/addresses', require('./routes/address.route'));
 app.use('/classes', require('./routes/class.route'));
-app.use('/subjects', require('./routes/subject.route'));
-app.use('/teachers', require('./routes/teacher.route'));
 app.use('/student-classes', require('./routes/student-classes.route'));
+app.use('/subjects', require('./routes/subject.route'));
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => `Server started on port ${PORT}`);
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

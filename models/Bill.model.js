@@ -1,46 +1,38 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
-const Subject = require('../models/Subject.model');
 const User = require('../models/User.model');
 
-const Class = db.define('classes', {
+const Bill = db.define('bills', {
   // attributes
+  // id | billing_reason | amount | is_paid | issue_date | payment_date | student_id (FK --> users.id)
   id: {
     type: Sequelize.INTEGER,
     allowNull: false,
     primaryKey: true,
     autoIncrement: true
   },
-  name: {
-    type: Sequelize.STRING,
+  billing_reason: {
+    type: Sequelize.STRING(255),
     allowNull: false
   },
-  start_time: {
-    type: Sequelize.TIME,
+  amout: {
+    type: Sequelize.FLOAT,
     allowNull: false
   },
-  end_time: {
-    type: Sequelize.TIME,
+  is_paid: {
+    type: Sequelize.BOOLEAN,
     allowNull: false
   },
-  school_year: {
-    type: Sequelize.INTEGER(4),
+  issue_date: {
+    type: Sequelize.DATEONLY,
     allowNull: false
   },
-  weekday: {
-    type: Sequelize.ENUM('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'),
+  payment_date: {
+    type: Sequelize.DATEONLY,
     allowNull: false
   },
-  subject_id: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-    references: {
-      model: Subject,
-      key: 'id'
-    }
-  },
-  teacher_id: {
+  student_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {

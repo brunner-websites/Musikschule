@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
-const Student = require('../models/Student.model');
+const User = require('../models/User.model');
 const Class = require('../models/Class.model');
 
 const StudentClasses = db.define('students_classes', {
@@ -11,7 +11,7 @@ const StudentClasses = db.define('students_classes', {
     primaryKey: true,
     allowNull: false,
     references: {
-      model: Student,
+      model: User,
       key: 'id'
     }
   },

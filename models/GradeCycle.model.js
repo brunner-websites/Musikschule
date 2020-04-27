@@ -1,23 +1,20 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
-const Teacher = db.define('teachers', {
+const GradeCycle = db.define('grade_cycles', {
   // attributes
+  // id | cycle (e.g.: month/trimester/quarter/semester)
+
   id: {
     type: Sequelize.INTEGER,
     allowNull: false,
     primaryKey: true,
     autoIncrement: true
   },
-  first_name: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  last_name: {
-    type: Sequelize.STRING,
+  cylce: {
+    type: Sequelize.STRING(20),
     allowNull: false
   }
-
 })
 
-module.exports = Teacher;
+module.exports = GradeCycle;
