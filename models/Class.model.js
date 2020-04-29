@@ -25,7 +25,7 @@ const Class = db.define('classes', {
     allowNull: false
   },
   school_year: {
-    type: Sequelize.INTEGER(4),
+    type: Sequelize.STRING(9),
     allowNull: false
   },
   weekday: {

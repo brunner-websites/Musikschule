@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
-const Student = require('../models/Student.model');
+const User = require('../models/User.model');
 const Class = require('../models/Class.model');
 
 const Grade = db.define('grades', {
@@ -18,11 +18,11 @@ const Grade = db.define('grades', {
     type: Sequelize.TINYINT(4),
     allowNull: false
   },
-  year: {
-    type: Sequelize.SMALLINT(6),
+  school_year: {
+    type: Sequelize.STRING(9),
     allowNull: false
   },
-  nth_grad: {
+  nth_grade: {
     type: Sequelize.TINYINT(4),
     allowNull: false
   },
@@ -30,7 +30,7 @@ const Grade = db.define('grades', {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {
-      model: Student,
+      model: User,
       key: 'id'
     }
   },

@@ -20,9 +20,12 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/addresses', require('./routes/address.route'));
+app.use('/bills', require('./routes/bill.route'));
 app.use('/classes', require('./routes/class.route'));
+app.use('/grades', require('./routes/grade.route'));
 app.use('/student-classes', require('./routes/student-classes.route'));
 app.use('/subjects', require('./routes/subject.route'));
+app.use('/weekly-notes', require('./routes/weekly-note.routes'));
 
 const PORT = process.env.PORT || 5000;
 

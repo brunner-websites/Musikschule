@@ -16,7 +16,7 @@ const Bill = db.define('bills', {
     type: Sequelize.STRING(255),
     allowNull: false
   },
-  amout: {
+  amount: {
     type: Sequelize.FLOAT,
     allowNull: false
   },
@@ -30,7 +30,11 @@ const Bill = db.define('bills', {
   },
   payment_date: {
     type: Sequelize.DATEONLY,
-    allowNull: false
+    allowNull: true
+  },
+  school_year: {
+    type: Sequelize.STRING(9),
+    allowNull: true
   },
   student_id: {
     type: Sequelize.INTEGER,
@@ -43,4 +47,4 @@ const Bill = db.define('bills', {
 
 })
 
-module.exports = Class;
+module.exports = Bill;

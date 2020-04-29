@@ -17,6 +17,10 @@ const WeeklyNote = db.define('weekly_notes', {
     type: Sequelize.TEXT,
     allowNull: false
   },
+  school_year: {
+    type: Sequelize.STRING(9),
+    allowNull: false
+  },
   class_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
