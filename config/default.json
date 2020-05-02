@@ -1,0 +1,9 @@
+{
+  "dbConfig": {
+    "host": "localhost",
+    "dbName": "musicschool",
+    "username": "musikAdmin",
+    "password": "biguns"
+  },
+  "currentSchoolYear": "2019-2020"
+}

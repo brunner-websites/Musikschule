@@ -1,0 +1,9 @@
+{
+  "dbConfig": {
+    "host": "xxx",
+    "dbName": "xxx",
+    "userName": "xxx",
+    "password": "xxx"
+  },
+  "currentSchoolYear": "2019-2020"
+}

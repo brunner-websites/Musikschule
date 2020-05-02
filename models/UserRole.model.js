@@ -1,8 +1,9 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
+const User = require('./User.model');
 
 
-const UserRoles = db.define('user_roles', {
+const UserRole = db.define('user_roles', {
   // attributes
   id: {
     type: Sequelize.INTEGER,
@@ -17,4 +18,4 @@ const UserRoles = db.define('user_roles', {
 
 });
 
-module.exports = UserRoles;
+module.exports = UserRole;

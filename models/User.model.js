@@ -1,8 +1,11 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
-const UserRoles = require('../models/UserRoles.model');
-const Address = require('../models/Address.model');
+const UserRole = require('./UserRole.model');
+const Address = require('./Address.model');
+const Class = require('./Class.model');
+const StudentClasses = require('./StudentClasses.model');
+
 
 const User = db.define('users', {
   // attributes
@@ -32,7 +35,7 @@ const User = db.define('users', {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {
-      model: UserRoles,
+      model: UserRole,
       key: 'id'
     }
   },
@@ -53,5 +56,16 @@ const User = db.define('users', {
     }
   }
 })
+
+User.belongsTo(UserRole, { foreignKey: 'role_id' });
+UserRole.hasMany(User, { foreignKey: 'role_id' });
+
+// This is the 1 : Many relations-ship between Class to User (in this case the user is a teacher (defined by the role_id))
+// Class.belongsTo(User, { foreignKey: 'teacher_id' });
+// User.hasMany(Class, { foreignKey: 'teacher_id' });
+
+// This is the May : Many relations-ship between Class to User (in this case the user is a student (defined by the student_id))
+User.belongsToMany(Class, { through: StudentClasses, foreignKey: 'student_id', otherKey: 'class_id' });
+Class.belongsToMany(User, { through: StudentClasses, foreignKey: 'class_id', otherKey: 'student_id' })
 
 module.exports = User;
