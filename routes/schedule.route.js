@@ -5,7 +5,8 @@ const Class = require('../models/Class.model');
 const UserRole = require('../models/UserRole.model');
 var moment = require('moment');
 
-//const { getUserRole } = require('../utils/user.utility');
+const { getUserRole } = require('../utils/user.utility');
+const { getCurrentSchoolYear } = require('../utils/general.utility');
 
 const { Op } = require('sequelize');
 const { query } = require('express-validator');
@@ -31,10 +32,11 @@ router.get(
       // 2 Depending if user is a teacher or a student 
       // Teacher: Get all the CLASSES (with the students attached to the classes)
       // Student: Get all the CLASSES
-      let classes = null
-      if (userRole != null && userRole.role != null) {
+      let classes = null;
 
-        switch (userRole.role) {
+      if (userRole != null) {
+
+        switch (userRole) {
           case 'teacher':
             classes = await getClassesForTeacher(userID);
             break;
@@ -151,46 +153,5 @@ function getEventObject(item, eventType = 'custom') {
   return event;
 }
 
-async function getUserRole(userID) {
-
-  try {
-    const user = await User.findOne({
-      where: {
-        id: userID
-      },
-      include: UserRole,
-      required: true,
-      attributes: { exclude: ['password'] }
-    });
-
-    if (user) {
-      return user.user_role;
-    } else {
-      return null;
-    }
-
-
-  } catch (error) {
-    console.log("Error Fetching User Role (getUserRole) " + error);
-  }
-}
-
-
-// Returns the current school year in the format yyyy-yyyy (e.g. 2019-2020)
-// If we're before September the current school year is gonna be 'year-before'-'current-year'
-// If we're after September the current school year is gonna be 'current-year'-'year-after'
-function getCurrentSchoolYear() {
-
-  const now = moment();
-
-  if (now.month() < 9) {
-    const yearBefore = now.year() - 1;
-    return yearBefore + "-" + now.year();
-  } else {
-    const yearAfter = now.year() + 1;
-    return now.year() + '-' + yearAfter;
-  }
-
-}
 
 module.exports = router;

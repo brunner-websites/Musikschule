@@ -19,14 +19,15 @@ app.get('/', (req, res) => {
 })
 
 // Routes
-app.use('/addresses', require('./routes/address.route'));
-app.use('/bills', require('./routes/bill.route'));
-app.use('/schedule', require('./routes/schedule.route'));
-app.use('/classes', require('./routes/class.route'));
-app.use('/grades', require('./routes/grade.route'));
-app.use('/student-classes', require('./routes/student-classes.route'));
-app.use('/subjects', require('./routes/subject.route'));
-app.use('/weekly-notes', require('./routes/weekly-note.routes'));
+// app.use('/api/v1/addresses', require('./routes/address.route'));
+// app.use('/api/v1/student-classes', require('./routes/student-classes.route'));
+app.use('/api/v1/attendance-lists', require('./routes/attendance-list.route'));
+app.use('/api/v1/bills', require('./routes/bill.route'));
+app.use('/api/v1/schedule', require('./routes/schedule.route'));
+app.use('/api/v1/classes', require('./routes/class.route'));
+app.use('/api/v1/grades', require('./routes/grade.route'));
+app.use('/api/v1/subjects', require('./routes/subject.route'));
+app.use('/api/v1/weekly-notes', require('./routes/weekly-note.routes'));
 
 const PORT = process.env.PORT || 5000;
 

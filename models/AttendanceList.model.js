@@ -18,9 +18,17 @@ const AttendanceList = db.define('attendance_lists', {
     type: Sequelize.DATEONLY,
     allowNull: false
   },
+  school_year: {
+    type: Sequelize.STRING(9),
+    allowNull: false
+  },
+  month: {
+    type: Sequelize.INTEGER(2),
+    allowNull: false
+  },
   has_attended: {
     type: Sequelize.BOOLEAN,
-    allowNull: false
+    allowNull: true
   },
   student_id: {
     type: Sequelize.INTEGER,
@@ -39,5 +47,15 @@ const AttendanceList = db.define('attendance_lists', {
     }
   }
 })
+
+
+// AttendanceList (*) ------- (1) User
+AttendanceList.belongsTo(User, { foreignKey: 'student_id' });
+User.hasMany(AttendanceList, { foreignKey: 'student_id' });
+
+// AttendanceList (*) ------- (1) Class
+AttendanceList.belongsTo(Class, { foreignKey: 'class_id' });
+Class.hasMany(AttendanceList, { foreignKey: 'class_id' });
+
 
 module.exports = AttendanceList;

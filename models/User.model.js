@@ -47,16 +47,25 @@ const User = db.define('users', {
     type: Sequelize.STRING(255),
     allowNull: false,
   },
-  address_id: {
-    type: Sequelize.INTEGER,
+  region: {
+    type: Sequelize.STRING(50),
     allowNull: false,
-    references: {
-      model: Address,
-      key: 'id'
-    }
+  },
+  city: {
+    type: Sequelize.STRING(50),
+    allowNull: false,
+  },
+  zip: {
+    type: Sequelize.INTEGER(11),
+    allowNull: false,
+  },
+  street: {
+    type: Sequelize.STRING(50),
+    allowNull: false,
   }
 })
 
+// User (*) ------- (1) UserRole
 User.belongsTo(UserRole, { foreignKey: 'role_id' });
 UserRole.hasMany(User, { foreignKey: 'role_id' });
 
@@ -64,7 +73,8 @@ UserRole.hasMany(User, { foreignKey: 'role_id' });
 // Class.belongsTo(User, { foreignKey: 'teacher_id' });
 // User.hasMany(Class, { foreignKey: 'teacher_id' });
 
-// This is the May : Many relations-ship between Class to User (in this case the user is a student (defined by the student_id))
+// This is the Many : Many relations-ship between Class to User (in this case the user is a student (defined by the student_id))
+// User (m) ------ StudentClasses ------ (n) Class
 User.belongsToMany(Class, { through: StudentClasses, foreignKey: 'student_id', otherKey: 'class_id' });
 Class.belongsToMany(User, { through: StudentClasses, foreignKey: 'class_id', otherKey: 'student_id' })
 
