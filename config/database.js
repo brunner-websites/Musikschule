@@ -11,6 +11,7 @@ const host = config.get('dbConfig.host');
 const db = new Sequelize(dbName, username, password, {
   host: host,
   dialect: 'mysql',
+  timezone: '+02:00',   // Set timezone to Madrid ECT
   define: {
     freezeTableName: true,
     timestamps: false

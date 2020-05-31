@@ -5,7 +5,7 @@ const User = require('./User.model');
 const Class = require('./Class.model');
 
 
-const AttendanceList = db.define('attendance_lists', {
+const AttendanceEntry = db.define('attendance_entries', {
   // attributes
   // id | date | has_attended | student_id | class_id
   id: {
@@ -50,12 +50,12 @@ const AttendanceList = db.define('attendance_lists', {
 
 
 // AttendanceList (*) ------- (1) User
-AttendanceList.belongsTo(User, { foreignKey: 'student_id' });
-User.hasMany(AttendanceList, { foreignKey: 'student_id' });
+AttendanceEntry.belongsTo(User, { foreignKey: 'student_id' });
+User.hasMany(AttendanceEntry, { foreignKey: 'student_id' });
 
 // AttendanceList (*) ------- (1) Class
-AttendanceList.belongsTo(Class, { foreignKey: 'class_id' });
-Class.hasMany(AttendanceList, { foreignKey: 'class_id' });
+AttendanceEntry.belongsTo(Class, { foreignKey: 'class_id' });
+Class.hasMany(AttendanceEntry, { foreignKey: 'class_id' });
 
 
-module.exports = AttendanceList;
+module.exports = AttendanceEntry;

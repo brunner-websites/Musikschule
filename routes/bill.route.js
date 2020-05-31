@@ -12,7 +12,7 @@ const { getCurrentSchoolYear } = require('../utils/general.utility');
 //  @route    GET    /api/v1/bills  
 //  @desc     Receiving one or multiple bills
 //  @access   Private (Can only be done by admin) 
-//  @Query-Params:  ?user={user-id}&school-year={year}  
+//  @Query-Params:  ?user={user-id}&year={year}  
 
 router.get(
   '/',
