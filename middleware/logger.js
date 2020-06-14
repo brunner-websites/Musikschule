@@ -19,7 +19,7 @@ const logger = async (req, res, next) => {
 
     const log = await Log.create({
       // attributes
-      // id	user_id	ip_address	method	body	requested_url	time
+      // id |	user_id |	ip_address | method |	body |	requested_url |	time
       user_id: userId,
       ip_address: ipAddress,
       method,

@@ -6,7 +6,7 @@ const Class = require('../models/Class.model');
 
 const Grade = db.define('grades', {
   // attributes
-  // id | grade | year | nth_grade | student_id (FK) | class_id (FK)
+  // id | grade | year | time_taken | time_updated | student_id (FK) | class_id (FK)
 
   id: {
     type: Sequelize.INTEGER,
@@ -15,16 +15,20 @@ const Grade = db.define('grades', {
     autoIncrement: true
   },
   grade: {
-    type: Sequelize.TINYINT(4),
+    type: Sequelize.FLOAT,
     allowNull: false
   },
   school_year: {
     type: Sequelize.STRING(9),
     allowNull: false
   },
-  nth_grade: {
-    type: Sequelize.TINYINT(4),
+  time_taken: {
+    type: Sequelize.DATE,
     allowNull: false
+  },
+  time_updated: {
+    type: Sequelize.DATE,
+    allowNull: true
   },
   student_id: {
     type: Sequelize.INTEGER,

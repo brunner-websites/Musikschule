@@ -192,11 +192,11 @@ router.delete(
         }
       );
 
-      return res.status(200);
+      res.status(200).json({ msg: "request completed", rowsDeleted: deletedSubject });
 
     } catch (error) {
       console.error("Error deleting subject: " + error);
-      return res.status(500).json({ msg: "Server Error " });
+      res.status(500).json({ msg: "Server Error " });
     }
 
   });

@@ -4,6 +4,9 @@ const logger = require('./middleware/logger');
 const path = require('path');
 const db = require('./config/database');
 
+const config = require('config');
+const isLoggingActive = config.get('logs_active');
+
 db
   .authenticate()
   .then(() => { console.log('Connection has been established successfully.'); })
@@ -16,7 +19,10 @@ app.use(express.json({ extended: false }));
 
 
 // Logger middleware
-app.use(logger);
+if (isLoggingActive) {
+  app.use(logger);
+}
+
 
 
 app.get('/', (req, res) => {

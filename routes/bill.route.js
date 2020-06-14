@@ -197,7 +197,7 @@ router.delete(
       );
 
 
-      return res.status(200);
+      res.status(200).json({ msg: "request completed", rowsDeleted: deletedBill });;
 
     } catch (error) {
       console.error("Error deleting bill: " + error);

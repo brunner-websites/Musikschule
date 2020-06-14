@@ -30,7 +30,8 @@ router.get(
 
     if (roleId || email) {
       whereClauses = {
-        where: { [Op.and]: [] }
+        where: { [Op.and]: [] },
+        attributes: { exclude: ['password'] }
       }
     }
 
@@ -44,7 +45,11 @@ router.get(
 
 
     try {
-      const users = await User.findAll(whereClauses ? whereClauses : undefined);
+      const users = await User.findAll(
+        whereClauses ? whereClauses : {
+          attributes: { exclude: ['password'] }
+        }
+      );
       res.status(200).json(users);
     } catch (error) {
       console.log("error fetching users " + error);
@@ -93,7 +98,7 @@ router.post(
         return res.status(400).json({ msg: "Not authorized" });
       }
 
-      // 3 Create new bill 
+      // 3 Create new user 
       // id | first_name | last_name | email | password | role_id | birth_date | image | region | city | zip | street
       const { firstName, lastName, email, password, roleId, birthDate, image, region, city, zipCode, streetAddress } = req.body;
 
@@ -206,7 +211,7 @@ router.delete(
         return res.status(400).json({ msg: "Not authorized" });
       }
 
-      // 3 Delete the bill
+      // 3 Delete the user
 
       const deletedUser = await User.destroy(
         {
@@ -214,7 +219,7 @@ router.delete(
         }
       );
 
-      return res.status(200);
+      res.status(200).json({ msg: "request completed", rowsDeleted: deletedUser });;
 
     } catch (error) {
       console.error("Error deleting user: " + error);

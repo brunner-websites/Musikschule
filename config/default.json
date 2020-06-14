@@ -5,5 +5,7 @@
     "username": "musikAdmin",
     "password": "biguns"
   },
-  "currentSchoolYear": "2019-2020"
+  "currentSchoolYear": "2019-2020",
+  "logs_active": true,
+  "jwtSecret": "secret"
 }
