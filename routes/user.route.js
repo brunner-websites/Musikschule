@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 const { query, check, validationResult } = require('express-validator');
 const moment = require('moment');
@@ -59,6 +60,27 @@ router.get(
   });
 
 
+//  @route    GET    /api/v1/users/:userID
+//  @desc     Get a specific user by ID
+//  @access   Private (Can only be accessed by admin and teacher) 
+
+router.get(
+  '/:id',
+  [],
+  async (req, res) => {
+
+    try {
+
+      const users = await User.findAll({ where: { id: req.params.id }, attributes: { exclude: ['password'] } });
+      res.status(200).json(users);
+    } catch (error) {
+      console.log("error fetching user " + error);
+      res.status(500).json({ msg: "Server Error" })
+    }
+
+  });
+
+
 //  @route    POST    /api/v1/attendance-lists  
 //  @desc     Create a new attendance entry
 //  @access   Private (Can only be done by admin and teacher)    
@@ -69,7 +91,7 @@ router.post(
     check('firstName', 'first name is required').not().isEmpty(),
     check('lastName', 'first name is required').not().isEmpty(),
     check('email', 'email is required').isEmail(),
-    check('password', 'password is required').not().isEmpty(),
+    check('password', 'password is required and needs to have at least 6 characters').isLength({ min: 6 }),
     check('roleId', 'roleId is required and needs to be numberic').isNumeric(),
     check('birthDate', 'birthDate is required').not().isEmpty(),
     check('city', 'city is required').not().isEmpty(),
@@ -89,25 +111,27 @@ router.post(
       // This will come from the req.body once authentication is implemented
       const userID = 5;
 
-      // 1 Get User-Role
+      // Get User-Role
       const userRole = await getUserRole(userID);
 
-      console.log(userRole);
-      // 2 If user is not an admin return error message
+      // If user is not an admin return error message
       if (userRole != 'admin') {
         return res.status(400).json({ msg: "Not authorized" });
       }
 
-      // 3 Create new user 
+      // Create new user 
       // id | first_name | last_name | email | password | role_id | birth_date | image | region | city | zip | street
       const { firstName, lastName, email, password, roleId, birthDate, image, region, city, zipCode, streetAddress } = req.body;
 
-      // TODO hash password
+      // Create hashed user-password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
       const user = await User.create({
         first_name: firstName,
         last_name: lastName,
         email,
-        password,
+        password: hashedPassword,
         role_id: roleId,
         birth_date: birthDate,
         image,
@@ -117,14 +141,12 @@ router.post(
         street: streetAddress
       });
 
-      console.log(user.toJSON());
       return res.status(200).json(user);
 
     } catch (error) {
       console.error("Error creating user: " + error);
       return res.status(500).json({ msg: "Server Error " + error });
     }
-
   });
 
 

@@ -40,6 +40,7 @@ app.use('/api/v1/grades', require('./routes/grade.route'));
 app.use('/api/v1/subjects', require('./routes/subject.route'));
 app.use('/api/v1/users', require('./routes/user.route'));
 app.use('/api/v1/weekly-notes', require('./routes/weekly-note.routes'));
+app.use('/api/v1/auth', require('./routes/auth.route'));
 
 const PORT = process.env.PORT || 5000;
 

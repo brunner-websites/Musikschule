@@ -28,6 +28,10 @@ const Bill = db.define('bills', {
     type: Sequelize.DATEONLY,
     allowNull: false
   },
+  due_date: {
+    type: Sequelize.DATEONLY,
+    allowNull: true
+  },
   payment_date: {
     type: Sequelize.DATEONLY,
     allowNull: true

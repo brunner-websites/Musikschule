@@ -103,15 +103,15 @@ router.post(
       // This will come from the req.body once authentication is implemented
       const userID = 5;
 
-      // 1 Get User-Role
+      // Get User-Role
       const userRole = await getUserRole(userID);
 
-      // 2 If user is not an admin or teacher return error message
+      // If user is not an admin or teacher return error message
       if (!(userRole == 'admin' || userRole == 'teacher')) {
         return res.status(400).json({ msg: "Not authorized" });
       }
 
-      // 3 Create new class 
+      // Create new class 
       // id | name | start_time | end_time | school_year | weekday | subject_id | teacher_id | 
       const { name, startTime, endTime, schoolYear, weekday, subjectId, teacherId } = req.body;
 

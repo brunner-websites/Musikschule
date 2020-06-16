@@ -7,5 +7,6 @@
   },
   "currentSchoolYear": "2019-2020",
   "logs_active": true,
-  "jwtSecret": "secret"
+  "jwtSecret": "secret",
+  "jwtExpireTime": "3600"
 }

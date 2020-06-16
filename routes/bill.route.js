@@ -7,39 +7,55 @@ const moment = require('moment');
 const Bill = require('../models/Bill.model');
 const { getUserRole } = require('../utils/user.utility');
 const { getCurrentSchoolYear } = require('../utils/general.utility');
+const auth = require('../middleware/auth');
 
 
 //  @route    GET    /api/v1/bills  
 //  @desc     Receiving one or multiple bills
 //  @access   Private (Can only be done by admin) 
-//  @Query-Params:  ?user={user-id}&year={year}  
+//  @Query-Params:  ?student={user-id}&year={year}  
 
 router.get(
   '/',
+  auth,
   [
-    query('user').escape(),
+    query('student').escape(),
     query('year').escape()
   ],
   async (req, res) => {
 
-    const userID = req.query.user ? req.query.user : false;
-    const schoolYear = req.query.year ? req.query.year : false;
+    const userId = req.user.id;
+    const userRole = req.user.role;
 
     let whereClauses = false;
 
-    if (userID || schoolYear) {
-      whereClauses = {
-        where: { [Op.and]: [] }
+    // Admin can request any bill he want
+    if (userRole == 'admin') {
+      const userID = req.query.student ? req.query.student : false;
+      const schoolYear = req.query.year ? req.query.year : false;
+
+      if (userID || schoolYear) {
+        whereClauses = {
+          where: { [Op.and]: [] }
+        }
       }
+
+      if (userID) {
+        whereClauses.where[Op.and].push({ student_id: userID });
+      };
+
+      if (schoolYear) {
+        whereClauses.where[Op.and].push({ school_year: schoolYear });
+      };
     }
-
-    if (userID) {
-      whereClauses.where[Op.and].push({ student_id: userID });
-    };
-
-    if (schoolYear) {
-      whereClauses.where[Op.and].push({ school_year: schoolYear });
-    };
+    // student can only see his own bills
+    else if (userRole == 'student') {
+      whereClauses = {
+        where: { student_id: userId }
+      }
+    } else {
+      return res.status(401).json({ msg: 'Authorization denied' });
+    }
 
 
     try {
@@ -52,17 +68,59 @@ router.get(
   });
 
 
+//  @route    GET    /api/v1/bills/:billId
+//  @desc     Get a specific bill by ID
+//  @access   Private (Can only be accessed by admin and student) 
+
+router.get(
+  '/:id',
+  auth,
+  [],
+  async (req, res) => {
+
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    let whereClause = null;
+
+    if (userRole == 'admin') {
+      whereClause = { where: { id: req.params.id } };
+    } else if (userRole == 'student') {
+      whereClause = {
+        where: {
+          [Op.and]: [
+            { id: req.params.id },
+            { student_id: userId }
+          ]
+        }
+      }
+    } else {
+      return res.status(401).json({ msg: 'Authorization denied' });
+    }
+
+    try {
+
+      const bills = await Bill.findAll(whereClause);
+      res.status(200).json(bills);
+    } catch (error) {
+      console.log("error fetching bill " + error);
+      res.status(500).json({ msg: "Server Error" })
+    }
+
+  });
+
+
 //  @route    POST    /api/v1/bills  
 //  @desc     Creating a new bill
-//  @access   Private (Can only be done by admin)    
+//  @access   Private (Can only accessed by admin)    
 router.post(
   '/',
+  auth,
   [
-    // id | billing_reason | amount | is_paid | issue_date | payment_date | school_year | student_id | 
-    check('billing_reason', 'billing_reason is required').not().isEmpty(),
+    // id | billing_reason | amount | is_paid | issue_date | due_date | payment_date | school_year | student_id | 
+    check('billingReason', 'billingReason is required').not().isEmpty(),
     check('amount', 'amount is required and needs to be numeric').isNumeric(),
-    check('payment_date', 'payment_date is required (YYYY-MM-DD)').not().isEmpty(),
-    check('student_id', 'student_id is required and needs to be numberic').isNumeric(),
+    check('studentId', 'studentId is required and needs to be numberic').isNumeric(),
   ],
   async (req, res) => {
 
@@ -73,32 +131,28 @@ router.post(
     }
 
     try {
-      // This will come from the req.body once authentication is implemented
-      const userID = 5;
+      const userRole = req.user.role;
 
-      // 1 Get User-Role
-      const userRole = await getUserRole(userID);
-
-      // 2 If user is not an admin return error message
+      // If user is not an admin return error message
       if (userRole != 'admin') {
-        return res.status(400).json({ msg: "Not authorized" });
+        return res.status(401).json({ msg: "Not authorized" });
       }
 
-      // 3 Create new bill 
-      // id | billing_reason | amount | is_paid | issue_date | payment_date | school_year | student_id | 
-      const { billing_reason, amount, payment_date, student_id } = req.body;
+      // Create new bill 
+      // id | billing_reason | amount | is_paid | issue_date | due_date | payment_date | school_year | student_id | 
+      const { billingReason, amount, paymentDate, dueDate, studentId } = req.body;
 
       const bill = await Bill.create({
-        billing_reason,
+        billing_reason: billingReason,
         amount,
         is_paid: false,
         issue_date: moment().format('YYYY-MM-DD'),
-        payment_date,
+        due_date: dueDate ? dueDate : null,
+        payment_date: paymentDate ? paymentDate : null,
         school_year: getCurrentSchoolYear(),
-        student_id
+        student_id: studentId
       });
 
-      console.log(bill.toJSON());
       return res.status(200).json(bill);
 
     } catch (error) {
@@ -114,6 +168,7 @@ router.post(
 //  @access   Private (Can only be done by admin)    
 router.put(
   '/:id',
+  auth,
   [
     // id | billing_reason | amount | is_paid | issue_date | payment_date | school_year | student_id | 
     // check('billing_reason', 'billing_reason is required').not().isEmpty(),
@@ -121,30 +176,29 @@ router.put(
   async (req, res) => {
 
     try {
-      // This will come from the req.body once authentication is implemented
-      const userId = 5;
+      const userRole = req.user.role;
 
-      // 1 Get User-Role
-      const userRole = await getUserRole(userId);
-
-      // 2 If user is not an admin return error message
+      // If user is not an admin return error message
       if (userRole != 'admin') {
-        return res.status(400).json({ msg: "Not authorized" });
+        return res.status(401).json({ msg: "Not authorized" });
       }
 
-      // 3 Create new bill 
+      // Create new bill 
       // id | billing_reason | amount | is_paid | issue_date | payment_date | school_year | student_id | 
-      const { billing_reason, amount, is_paid, issue_date, payment_date, student_id } = req.body;
+      const { billingReason, amount, isPaid, issueDate, dueDate, paymentDate, schoolYear,
+        studentId } = req.body;
 
       // Build contact object
       const billFields = {};
 
-      if (billing_reason) billFields.billing_reason = billing_reason;
+      if (billingReason) billFields.billing_reason = billingReason;
       if (amount) billFields.amount = amount;
-      if (is_paid) billFields.is_paid = is_paid;
-      if (issue_date) billFields.issue_date = issue_date;
-      if (payment_date) billFields.payment_date = payment_date;
-      if (student_id) billFields.student_id = student_id;
+      if (isPaid) billFields.is_paid = isPaid;
+      if (issueDate) billFields.issue_date = issueDate;
+      if (dueDate) billFields.due_date = dueDate;
+      if (paymentDate) billFields.payment_date = paymentDate;
+      if (schoolYear) billFields.school_year = schoolYear;
+      if (studentId) billFields.student_id = studentId;
 
       const updatedBill = await Bill.update(
         billFields,
@@ -174,22 +228,19 @@ router.put(
 //  @access   Private (Can only be done by admin)    
 router.delete(
   '/:id',
+  auth,
   async (req, res) => {
 
     try {
-      // This will come from the req.body once authentication is implemented
-      const userId = 5;
+      // This comes from the auth middleware
+      const userRole = req.user.role;
 
-      // 1 Get User-Role
-      const userRole = await getUserRole(userId);
-
-      // 2 If user is not an admin return error message
+      // If user is not an admin return error message
       if (userRole != 'admin') {
         return res.status(400).json({ msg: "Not authorized" });
       }
 
-      // 3 Delete the bill
-
+      // Delete the bill
       const deletedBill = await Bill.destroy(
         {
           where: { id: req.params.id }
