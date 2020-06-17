@@ -56,7 +56,7 @@ const User = db.define('users', {
     allowNull: false,
   },
   zip: {
-    type: Sequelize.INTEGER(11),
+    type: Sequelize.STRING(10),
     allowNull: false,
   },
   street: {
